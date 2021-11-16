@@ -1,9 +1,9 @@
 #Load packages
-
-x <- 90
-
-TJ <- "cool"
-
+library(caret)
 
 #STEP 1
-df <- read.csv('')
+df <- read.csv('Titanic_updated.csv')
+
+#c)
+
+training <- createDataPartition(df, p = 0.75)
