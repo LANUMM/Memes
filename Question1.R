@@ -1,6 +1,9 @@
 #Load packages
 
-tj <- "kinda cool"
+
+
+TJ <- "cool"
+
 
 #STEP 1
 df <- read.csv('')
