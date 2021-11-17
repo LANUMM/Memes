@@ -14,4 +14,6 @@ df$Age[is.na(df$Age)] <- median(df$Age, na.rm = TRUE)
 #STEP 2
 
 #c)
-training <- createDataPartition(df, p = 0.75)
+training_indices <- createDataPartition(df$Pclass, p = 0.75)$Resample1
+train <- df[training_indices,]
+test <- df[-training_indices,]
