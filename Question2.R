@@ -24,11 +24,38 @@ paste("Male survival rate: ",  round(length(df$Survived[df$Sex=="male" & df$Surv
 # As a result there does appear to be a significant association between these two columns. 
 
 #b)
-dmy <- dummyVars(~ Pclass+Sex+SibSp+Parch+Fare+Embarked, data=df)
+dmy <- dummyVars(~ Pclass+Sex+Age+SibSp+Parch+Fare+Embarked, data=df)
 dfOH <- data.frame(predict(dmy, newdata=df), "Survived" = df$Survived)
 head(dfOH)
 
 #c)
-# https://jootse84.github.io/notes/jaccard-index-calculation-in-R 
-library('philentropy')
-distance(cbind(dfOH$Sex.female, dfOH$Sex.male), method="jaccard")
+#Sex
+get_dist(dfOH[ ,c(4,5)], method="binary")
+#Embarked
+get_dist(dfOH[ ,c(10,11,12)], method="binary")
+
+#d)
+lapply(dfOH[,c(6,7,8,9)], get_dist, method="euclidean")
+lapply(dfOH[,c(6,7,8,9)], get_dist, method="kendall")
+
+#e)
+#1.
+#One drawback of the K-medoids algorithm is that you are required to estimate the number of clusters ahead of time. 
+
+#2.
+##compute the weighted sum of three distance matricies, weights are equally weighted (each origional column occupied 1/8 weight)
+my.d = 0.75*d.interval.kd + 0.125*d.sex + 0.125*d.eb
+##recombine the numeric and categorical data
+my_data = cbind.data.frame(interval.data,nominal.onehot)
+fviz_nbclust(x=my_data, FUNcluster=cluster::pam, method="wss", diss=my.d)
+
+#3.
+# http://www.sthda.com/english/articles/29-cluster-validation-essentials/96-determiningthe-optimal-number-of-clusters-3-must-know-methods/ 
+#Run the clustering algorithm for varying number of clusters, plot that against the within-cluster sum of square (wss) for that cluster, and the number of clusters with the bendy bit is the one you want. 
+
+#f)
+myPam <- pam(dfOH,2)
+preds <- myPam$clustering -1
+real <- dfOH$Survived
+sum(preds == real)/ length(preds)
+#The accuracy was 68.12% 
